@@ -1,5 +1,6 @@
-import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class AlarmService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -7,6 +8,8 @@ class AlarmService {
 
   static Future<void> initialize() async {
     if (_initialized) return;
+
+    tz.initializeTimeZones();
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -34,19 +37,13 @@ class AlarmService {
   static Future<void> scheduleAlarm(String accountName, String aiProvider, DateTime resetTime) async {
     await initialize();
     
+    // Request permission on Android 13+
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+        
     final now = DateTime.now();
     if (resetTime.isBefore(now)) return;
-    
-    final duration = resetTime.difference(now);
-    
-    // Simple Dart timer for active app execution
-    Timer(duration, () {
-      _showNotification(accountName, aiProvider);
-    });
-  }
-
-  static Future<void> _showNotification(String accountName, String aiProvider) async {
-    await initialize();
     
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -61,11 +58,13 @@ class AlarmService {
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
         
-    await _notificationsPlugin.show(
+    await _notificationsPlugin.zonedSchedule(
       id: accountName.hashCode + 1,
       title: 'Limit Reset',
       body: '$aiProvider ($accountName) - Limit reset',
+      scheduledDate: tz.TZDateTime.from(resetTime, tz.local),
       notificationDetails: platformChannelSpecifics,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 }
