@@ -34,12 +34,32 @@ If you just want to use the app to track your tokens, you don't need to write an
 
 Once you open the app, you need to connect your accounts to start tracking usage.
 
-### 1. Linking your Chrome Extension via Firebase
-To get real-time syncing between your browser and your phone:
+### 1. Creating Your Firebase Database
+Both the Android App and the Chrome Extension need a place to sync data. We use a free Firebase Realtime Database for this.
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/) and click **"Create a project"**.
+
+![Firebase Home](docs/firebase_home.png)
+
+2. Give your project a name (like "Tokenomics") and click **Continue**.
+
+![Create Project](docs/firebase_create.png)
+
+3. On the left sidebar, click on **Build** (or Product Categories) → **Realtime Database**.
+
+![Realtime Database](docs/firebase_database.png)
+
+4. Click **"Create Database"**, choose your nearest location, and start in **Test Mode** (so the app can read/write data easily).
+5. Once created, you will see a large URL at the top that looks like `https://your-project-default-rtdb.firebaseio.com/`. **Copy this URL.**
+
+### 2. Linking the Apps Together
+Now that you have your database URL:
 1. Open the **Tokenomics Chrome Extension** on your desktop.
-2. Go to the Extension Settings and copy your unique **Firebase Realtime Database URL**.
+2. Go to the Extension Settings, paste the URL into the Firebase field, and save.
 3. Open the **Tokenomics Android App**, tap the Settings icon (⚙️) in the top right.
-4. Paste your Firebase URL into the input field and save. 
+4. Paste the exact same URL into the input field and save. 
+
+That's it! Your browser and phone are now securely syncing in real-time.
 
 ### 2. Adding AI Accounts
 Tap the **"+"** button on the Home Screen to add your AI accounts. Depending on the provider, you will need a specific key:
@@ -55,51 +75,6 @@ Tap the **"+"** button on the Home Screen to add your AI accounts. Depending on 
   4. Paste this ID into the app.
 
 ---
-
-## 💻 Building from Source (For Developers)
-
-Want to modify the app or contribute? Here is how to get it running locally.
-
-### Prerequisites
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (latest stable version)
-- Android Studio & Android SDK
-- Git
-
-### Installation Steps
-
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/User69-og/Tokenomics-Android.git
-   cd Tokenomics-Android
-   ```
-
-2. **Install Dependencies:**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Run the App:**
-   Make sure you have an Android Emulator running or a physical device connected via USB debugging.
-   ```bash
-   flutter run
-   ```
-
-4. **Build a Release APK:**
-   ```bash
-   flutter build apk --release
-   ```
-   The compiled APK will be located at `build/app/outputs/flutter-apk/app-release.apk`.
-
-### Publishing Updates (OTA System)
-If you fork this project and want to use the OTA update system for your own users:
-1. Open `lib/services/update_service.dart`.
-2. Change the `_updateJsonUrl` to point to your repository's `update.json` file.
-3. When releasing a new version, update `pubspec.yaml`, build the APK, and upload it to GitHub Releases.
-4. Update the `update.json` file in the root of the repository with the new version number and APK URL.
-
----
-
-## 🛡️ Security & Privacy Architecture
 
 - **Local Storage:** `flutter_secure_storage` is used to encrypt all session tokens and API keys using AES encryption backed by the Android Keystore.
 - **Firebase:** The Realtime Database is only used as a transient middleman to pass usage statistics (numbers and percentages) between the extension and the phone. **Credentials are never uploaded to Firebase.**
