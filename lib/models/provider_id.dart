@@ -121,7 +121,7 @@ extension ProviderIdExtension on ProviderId {
   String get setupInstructions {
     switch (this) {
       case ProviderId.claude:
-        return '── Option A: Session Token (shows live usage %) ──\n1. Open claude.ai in your browser & log in\n2. Press F12 → go to Application → Cookies → claude.ai\n3. Find the cookie named "sessionKey"\n4. Copy its value (starts with "sk-ant-sid...")\n\n── Option B: Console API Key (confirms valid key only) ──\n1. Go to console.anthropic.com\n2. Click API Keys → Create Key\n3. Copy the key (starts with "sk-ant-api...")\n\nNote: Only the Session Token can show your 5-hour\nand weekly usage limits shown on claude.ai.';
+        return '── Option A: Live Usage (Chrome Sync) ──\n1. Log into claude.ai with the extension active\n2. Look at the usage bars at the bottom\n3. Click the "ID: ... (Copy)" button\n4. Paste it here\n\n── Option B: Console API Key ──\n1. Go to console.anthropic.com\n2. Click API Keys → Create Key\n3. Copy the key (starts with "sk-ant-api...")';
       case ProviderId.openai:
         return '1. Go to platform.openai.com\n2. Click your profile → API keys\n3. Create a new secret key\n4. Copy and paste it here';
       case ProviderId.gemini:

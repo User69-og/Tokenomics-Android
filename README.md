@@ -46,10 +46,10 @@ Tap the **"+"** button on the Home Screen to add your AI accounts. Depending on 
 
 * **Anthropic Claude (Live Usage %):** 
   To see your live 5-hour messaging limits on Claude.ai:
-  1. Open claude.ai in your desktop browser.
-  2. Press F12 → go to Application → Cookies → `claude.ai`.
-  3. Find the cookie named `sessionKey` (starts with `sk-ant-sid...`).
-  4. Paste this into the app.
+  1. Open claude.ai in your desktop browser with the Tokenomics Chrome Extension active.
+  2. Look at the usage bars at the bottom of the chat interface.
+  3. Click the **"ID: ... (Copy)"** button next to the bars.
+  4. Paste this ID into the app.
   
 * **OpenAI (ChatGPT):**
   1. Go to `platform.openai.com`.
