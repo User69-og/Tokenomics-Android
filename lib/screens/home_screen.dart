@@ -23,7 +23,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     @override
     void initState() {
       super.initState();
-      WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+      
+      // Wait for accounts to finish loading from storage, then trigger first fetch
+      ref.read(accountsProvider.future).then((_) {
+        if (mounted) _refresh();
+      });
       
       // Auto-poll Firebase every 5 seconds to simulate real-time streaming
       _pollingTimer = Timer.periodic(const Duration(seconds: 5), (_) {
