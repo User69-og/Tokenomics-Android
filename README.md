@@ -49,6 +49,9 @@ Tap the **"+"** button on the Home Screen to add your AI accounts. Depending on 
   1. Open claude.ai in your desktop browser with the Tokenomics Chrome Extension active.
   2. Look at the usage bars at the bottom of the chat interface.
   3. Click the **"ID: ... (Copy)"** button next to the bars.
+  
+  ![Claude Setup Example](docs/claude_setup_example.png)
+
   4. Paste this ID into the app.
   
 * **OpenAI (ChatGPT):**
