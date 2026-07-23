@@ -45,7 +45,7 @@ Both the Android App and the Chrome Extension need a place to sync data. We use 
 
 ![Create Project](docs/firebase_create.png)
 
-3. On the left sidebar, click on **Build** (or Product Categories) → **Realtime Database**.
+3. On the left sidebar, click on **Databases & Storage** → **Realtime Database**.
 
 ![Realtime Database](docs/firebase_database.png)
 
