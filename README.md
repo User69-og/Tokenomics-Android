@@ -4,6 +4,10 @@
   <strong>The ultimate companion app for tracking your AI token usage across multiple providers in real-time.</strong>
 </p>
 
+<div align="center">
+  <img src="docs/app_screenshot.png" alt="Tokenomics App Screenshot" width="300"/>
+</div>
+
 Tokenomics is a sleek, modern Android application that helps you monitor your AI API limits and token usage across Anthropic (Claude), OpenAI, Google AI Studio, and more. It pairs directly with the Tokenomics Chrome Extension, allowing you to track your multi-account usage directly from your phone.
 
 ---
