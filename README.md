@@ -10,7 +10,7 @@ Tokenomics is a sleek, modern Android application that helps you monitor your AI
 
 ## ✨ Features
 
-- 📊 **Multi-Provider Support:** Track usage limits for Anthropic Claude (Session Tokens & API Keys), OpenAI, Google Gemini, Cursor, ElevenLabs, RunwayML, and Stability AI.
+- 📊 **Claude Provider Support:** Track usage limits for Anthropic Claude (Live Session Tokens & Console API Keys). (Other AI platforms coming soon!)
 - ⚡ **Real-Time Firebase Sync:** Usage data syncs instantly from your Tokenomics Chrome Extension to your mobile device.
 - 🔔 **Smart Notifications:** Native Android background alarms alert you when you are nearing your hourly or weekly token caps without draining your battery.
 - 🔒 **Privacy First:** Your API keys are encrypted and stored locally in your device's native Android Keystore. **No keys are sent to any external servers.**
@@ -53,16 +53,6 @@ Tap the **"+"** button on the Home Screen to add your AI accounts. Depending on 
   ![Claude Setup Example](docs/claude_setup_example.png)
 
   4. Paste this ID into the app.
-  
-* **OpenAI (ChatGPT):**
-  1. Go to `platform.openai.com`.
-  2. Profile → API keys → Create new secret key.
-  
-* **Google AI Studio (Gemini):**
-  1. Go to `aistudio.google.com`.
-  2. Click "Get API key" → Create new key.
-
-*Keys for Cursor, ElevenLabs, RunwayML, and Stability AI can also be found in their respective account settings pages.*
 
 ---
 
