@@ -22,7 +22,7 @@ class UpdateInfo {
 class UpdateService {
   // Replace this with your actual GitHub raw URL once published
   static const String _updateJsonUrl =
-      'https://raw.githubusercontent.com/TokenomicsApp/Tokenomics-Android/main/update.json';
+      'https://raw.githubusercontent.com/User69-og/Tokenomics-Android/main/update.json';
   
   static final Dio _dio = Dio();
 
