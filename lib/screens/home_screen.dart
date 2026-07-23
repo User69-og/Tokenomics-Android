@@ -9,6 +9,7 @@ import '../theme/app_theme.dart';
 import '../widgets/usage_widgets.dart';
 import 'provider_detail_screen.dart';
 import 'settings_screen.dart';
+import '../services/update_service.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -35,6 +36,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _refresh();
         }
       });
+
+      // Check for updates after the frame renders
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _checkForUpdates();
+      });
     }
 
     @override
@@ -48,6 +54,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (accounts.isNotEmpty) {
       await ref.read(usageStateProvider.notifier).refresh(accounts);
     }
+  }
+
+  Future<void> _checkForUpdates() async {
+    final updateInfo = await UpdateService.checkForUpdate();
+    if (!mounted || !updateInfo.hasUpdate) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _UpdateDialog(updateInfo: updateInfo),
+    );
   }
 
   @override
@@ -288,6 +305,122 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
+class _UpdateDialog extends StatefulWidget {
+  final UpdateInfo updateInfo;
+
+  const _UpdateDialog({required this.updateInfo});
+
+  @override
+  State<_UpdateDialog> createState() => _UpdateDialogState();
+}
+
+class _UpdateDialogState extends State<_UpdateDialog> {
+  bool _isDownloading = false;
+  double _progress = 0;
+
+  void _startDownload() {
+    setState(() {
+      _isDownloading = true;
+    });
+
+    UpdateService.downloadAndInstallUpdate(
+      widget.updateInfo.apkUrl,
+      (progress) {
+        if (mounted) {
+          setState(() {
+            _progress = progress;
+          });
+          if (progress == 1.0) {
+            Navigator.of(context).pop(); // Close dialog when done
+          } else if (progress == -1.0) {
+            // Error
+            setState(() {
+              _isDownloading = false;
+              _progress = 0;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to download update.')),
+            );
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async => !_isDownloading, // Prevent back button if downloading
+      child: AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text(
+          'Update Available',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Version ${widget.updateInfo.latestVersion} is available!',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            if (widget.updateInfo.releaseNotes.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                'Release Notes:',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.updateInfo.releaseNotes,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+            if (_isDownloading) ...[
+              const SizedBox(height: 24),
+              LinearProgressIndicator(
+                value: _progress,
+                backgroundColor: Theme.of(context).dividerColor,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Center(
+                child: Text(
+                  '${(_progress * 100).toStringAsFixed(1)}%',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          if (!_isDownloading)
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Later',
+                style: TextStyle(color: Theme.of(context).hintColor),
+              ),
+            ),
+          if (!_isDownloading)
+            ElevatedButton(
+              onPressed: _startDownload,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Update Now'),
+            ),
+        ],
+      ),
+    );
+  }
+}
 
 class _ExpandableProviderCard extends ConsumerStatefulWidget {
   final ProviderId provider;
