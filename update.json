@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
-  "apkUrl": "https://github.com/User69-og/Tokenomics-Android/releases/download/v1.0.1/app-release.apk",
-  "releaseNotes": "Added toggle for OS notifications with test notification"
+  "version": "1.0.2",
+  "apkUrl": "https://github.com/User69-og/Tokenomics-Android/releases/download/v1.0.2/app-release.apk",
+  "releaseNotes": "Fix test notification silent failure and icon mismatch"
 }
