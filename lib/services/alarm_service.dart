@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'app_preferences.dart';
 
 class AlarmService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -35,6 +36,9 @@ class AlarmService {
   }
 
   static Future<void> scheduleAlarm(String accountName, String aiProvider, DateTime resetTime) async {
+    final enabled = await AppPreferences.getNotificationsEnabled();
+    if (!enabled) return;
+    
     await initialize();
     
     // Request permission on Android 13+
@@ -65,6 +69,35 @@ class AlarmService {
       scheduledDate: tz.TZDateTime.from(resetTime, tz.local),
       notificationDetails: platformChannelSpecifics,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
+
+  static Future<void> sendTestNotification() async {
+    await initialize();
+    
+    // Request permission on Android 13+
+    await _notificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'claude_alarms_ready',
+      'Claude Accounts Ready',
+      channelDescription: 'Alerts when your Claude accounts are ready to use',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+    
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+        
+    await _notificationsPlugin.show(
+      9999,
+      'Test Notification',
+      'If you see this, token limit alerts are working!',
+      platformChannelSpecifics,
     );
   }
 }

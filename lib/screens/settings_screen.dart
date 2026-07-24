@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_config.dart';
+import '../services/app_preferences.dart';
+import '../services/alarm_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -11,6 +13,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final _urlController = TextEditingController();
   bool _isSaving = false;
+  bool _notificationsEnabled = true;
 
   @override
   void initState() {
@@ -20,9 +23,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadUrl() async {
     final url = await FirebaseConfig.getUrl();
+    final notifications = await AppPreferences.getNotificationsEnabled();
     if (url != null) {
       _urlController.text = url;
     }
+    setState(() {
+      _notificationsEnabled = notifications;
+    });
   }
 
   Future<void> _saveUrl() async {
@@ -77,6 +84,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text(
               'Make sure your database rules allow reading and writing. The URL should look like the example above.',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+            const SizedBox(height: 32),
+            const Text(
+              'Notifications',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.withOpacity(0.2)),
+              ),
+              child: SwitchListTile(
+                title: const Text('OS Level Notifications'),
+                subtitle: const Text('Get notified when limits reset'),
+                value: _notificationsEnabled,
+                onChanged: (value) async {
+                  setState(() => _notificationsEnabled = value);
+                  await AppPreferences.setNotificationsEnabled(value);
+                  if (value) {
+                    // Send a test notification
+                    await AlarmService.sendTestNotification();
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Test notification sent!')),
+                      );
+                    }
+                  }
+                },
+                activeColor: Colors.tealAccent.shade400,
+              ),
             ),
             const Spacer(),
             ElevatedButton(
