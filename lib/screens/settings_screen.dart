@@ -106,11 +106,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   await AppPreferences.setNotificationsEnabled(value);
                   if (value) {
                     // Send a test notification
-                    await AlarmService.sendTestNotification();
+                    final error = await AlarmService.sendTestNotification();
                     if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Test notification sent!')),
-                      );
+                      if (error == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Test notification sent!')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Notification failed: $error'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        // Revert switch if permission denied
+                        setState(() => _notificationsEnabled = false);
+                        await AppPreferences.setNotificationsEnabled(false);
+                      }
                     }
                   }
                 },

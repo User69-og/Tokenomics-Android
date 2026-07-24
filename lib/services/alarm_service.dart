@@ -13,7 +13,7 @@ class AlarmService {
     tz.initializeTimeZones();
 
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/launcher_icon');
         
     final DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings();
@@ -72,32 +72,42 @@ class AlarmService {
     );
   }
 
-  static Future<void> sendTestNotification() async {
-    await initialize();
-    
-    // Request permission on Android 13+
-    await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+  static Future<String?> sendTestNotification() async {
+    try {
+      await initialize();
+      
+      // Request permission on Android 13+
+      final granted = await _notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestNotificationsPermission();
 
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'claude_alarms_ready',
-      'Claude Accounts Ready',
-      channelDescription: 'Alerts when your Claude accounts are ready to use',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
-    );
-    
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-        
-    await _notificationsPlugin.show(
-      id: 9999,
-      title: 'Test Notification',
-      body: 'If you see this, token limit alerts are working!',
-      notificationDetails: platformChannelSpecifics,
-    );
+      if (granted == false) {
+        return "Notification permission denied.";
+      }
+
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'claude_alarms_ready',
+        'Claude Accounts Ready',
+        channelDescription: 'Alerts when your Claude accounts are ready to use',
+        importance: Importance.max,
+        priority: Priority.high,
+        ticker: 'ticker',
+      );
+      
+      const NotificationDetails platformChannelSpecifics =
+          NotificationDetails(android: androidPlatformChannelSpecifics);
+          
+      await _notificationsPlugin.show(
+        id: 9999,
+        title: 'Test Notification',
+        body: 'If you see this, token limit alerts are working!',
+        notificationDetails: platformChannelSpecifics,
+      );
+      return null; // Success
+    } catch (e) {
+      print("Notification Error: $e");
+      return e.toString();
+    }
   }
 }
