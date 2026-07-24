@@ -94,10 +94,10 @@ class AlarmService {
         NotificationDetails(android: androidPlatformChannelSpecifics);
         
     await _notificationsPlugin.show(
-      9999,
-      'Test Notification',
-      'If you see this, token limit alerts are working!',
-      platformChannelSpecifics,
+      id: 9999,
+      title: 'Test Notification',
+      body: 'If you see this, token limit alerts are working!',
+      notificationDetails: platformChannelSpecifics,
     );
   }
 }
